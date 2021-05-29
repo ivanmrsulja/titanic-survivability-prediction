@@ -62,7 +62,7 @@ def evaluate_linear_model(model, test_x_orig, test_y, name, plot=False):
     print("\n*{} CLASSIFIER:".format(name))
     print("Passed: ", passed)
     print("Failed: ", failed)
-    print("Precision: ", (passed / len(test_y)) * 100, " %")
+    print("Accuracy: ", (passed / len(test_y)) * 100, " %")
 
     if plot and "tree" in name.lower():
         plt.figure(figsize=(40, 20))  # minimalna rezolucija za iscrtavanje
