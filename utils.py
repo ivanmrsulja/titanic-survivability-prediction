@@ -1,4 +1,5 @@
 from nn import *
+import pandas as pd
 
 plt.rcParams['figure.figsize'] = (5.0, 4.0)  # set default size of plots
 plt.rcParams['image.interpolation'] = 'nearest'
@@ -78,7 +79,7 @@ def get_structured_data():
 
     dev_set_size = (len(train_x_orig) // 5)
 
-    rng = np.random.default_rng(5035)
+    rng = np.random.default_rng(5025)
     indexes = rng.choice(len(train_x_orig), size=dev_set_size, replace=False)
 
     dev_x = []
@@ -97,42 +98,66 @@ def get_structured_data():
     return train_x_orig, train_y, test_x_orig, test_y, dev_x, dev_y
 
 
-def standardise_data(train_x_orig, test_x_orig, dev_x, print_cor=False, print_boxplot=False, train_y=None):
+def standardise_data(train_x_orig, test_x_orig, dev_x, print_cor=False, print_boxplot=False, train_y=None, remove_outliers=False, standardise=True):
+
+    if remove_outliers:
+        df = pd.DataFrame(train_x_orig)
+        Q1 = df.quantile(0.25)
+        Q3 = df.quantile(0.75)
+        IQR = Q3 - Q1
+        df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
+        train_x_orig = df.to_numpy()
+
+        df = pd.DataFrame(dev_x)
+        Q1 = df.quantile(0.25)
+        Q3 = df.quantile(0.75)
+        IQR = Q3 - Q1
+        df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
+        dev_x = df.to_numpy()
+
+
     train_arr = []
     dev_arr = []
     test_arr = []
-    for i in range(n_x):
-        for el in train_x_orig:
-            train_arr.append(el[i])
-        for el in dev_x:
-            dev_arr.append(el[i])
-        for el in test_x_orig:
-            test_arr.append(el[i])
 
-        data_train = np.array(train_arr)
-        data_dev = np.array(dev_arr)
-        data_test = np.array(test_arr)
+    if standardise:
+        for i in range(n_x):
+            for el in train_x_orig:
+                train_arr.append(el[i])
+            for el in dev_x:
+                dev_arr.append(el[i])
+            for el in test_x_orig:
+                test_arr.append(el[i])
 
-        mean_train = np.mean(data_train)
-        sd_train = np.sqrt(np.var(data_train))
-        mean_dev = np.mean(data_dev)
-        sd_dev = np.sqrt(np.var(data_dev))
-        mean_test = np.mean(data_test)
-        sd_test = np.sqrt(np.var(data_test))
-        for el in train_x_orig:
-            el[i] = (el[i] - mean_train) / sd_train
-        for el in dev_x:
-            el[i] = (el[i] - mean_dev) / sd_dev
-        for el in test_x_orig:
-            el[i] = (el[i] - mean_test) / sd_test
+            data_train = np.array(train_arr)
+            data_dev = np.array(dev_arr)
+            data_test = np.array(test_arr)
 
-        if print_cor:
-            print(np.corrcoef(data_train, train_y))
-            print()
-        if print_boxplot:
-            plt.boxplot(data_train, notch=None, vert=None, patch_artist=None, widths=None)
-            plt.show()
+            mean_train = np.mean(data_train)
+            sd_train = np.sqrt(np.var(data_train))
+            mean_dev = np.mean(data_dev)
+            sd_dev = np.sqrt(np.var(data_dev))
+            mean_test = np.mean(data_test)
+            sd_test = np.sqrt(np.var(data_test))
 
-        train_arr.clear()
-        dev_arr.clear()
-        test_arr.clear()
+            if remove_outliers:
+                sd_train += 0.001
+                sd_dev += 0.001
+
+            for el in train_x_orig:
+                el[i] = (el[i] - mean_train) / sd_train
+            for el in dev_x:
+                el[i] = (el[i] - mean_dev) / sd_dev
+            for el in test_x_orig:
+                el[i] = (el[i] - mean_test) / sd_test
+
+            if print_cor:
+                print(np.corrcoef(data_dev, train_y))
+                print()
+            if print_boxplot:
+                plt.boxplot(data_dev, notch=None, vert=None, patch_artist=None, widths=None)
+                plt.show()
+
+            train_arr.clear()
+            dev_arr.clear()
+            test_arr.clear()

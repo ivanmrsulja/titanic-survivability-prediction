@@ -5,17 +5,17 @@ plt.rcParams['figure.figsize'] = (5.0, 4.0)  # set default size of plots
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 
-
 ###########################################
 
 # CONSTANTS DEFINING THE MODEL
 n_x = 8
 layers_dims = [8, 25, 17, 11, 1]  # 4-layer model
 
+
 ###########################################
 
 
-def predict(X, y, parameters):
+def predict(X, y, parameters, print_predictions=False):
     """
     Predict the results of a  L-layer neural network.
 
@@ -40,6 +40,8 @@ def predict(X, y, parameters):
             p[0, i] = 1
         else:
             p[0, i] = 0
+        if print_predictions:
+            print(probas[0, i], "==", y[i], round(probas[0, i]) == y[i])
 
     print("Accuracy: " + str(np.sum((p == y) / m) * 100), "%")
 
@@ -48,6 +50,10 @@ def predict(X, y, parameters):
 
 def sigmoid(X):
     return 1 / (1 + np.exp(-X)), X
+
+
+def softmax(X):
+    return (np.exp(X) / np.sum(np.exp(X))), X
 
 
 def relu(X):
@@ -69,6 +75,17 @@ def relu_backward(dA, Z):
     assert (dZ.shape == Z.shape)
 
     return dZ
+
+
+def softmax_backward(da, z):
+    # z, da shapes - (m, n)
+    m, n = z.shape
+    p = softmax(z)
+    tensor1 = np.einsum('ij,ik->ijk', p, p)  # (m, n, n)
+    tensor2 = np.einsum('ij,jk->ijk', p, np.eye(n, n))  # (m, n, n)
+    dSoftmax = tensor2 - tensor1
+    dz = np.einsum('ijk,ik->ij', dSoftmax, da)  # (m, n)
+    return dz
 
 
 def sigmoid_backward(dA, Z):
@@ -152,13 +169,15 @@ def linear_activation_forward(A_prev, W, b, activation):
     if activation == "sigmoid":
         Z, linear_cache = linear_forward(A_prev, W, b)
         A, activation_cache = sigmoid(Z)
-
     elif activation == "relu":
         Z, linear_cache = linear_forward(A_prev, W, b)
         A, activation_cache = relu(Z)
     elif activation == "tanh":
         Z, linear_cache = linear_forward(A_prev, W, b)
         A, activation_cache = tanh(Z)
+    elif activation == "softmax":
+        Z, linear_cache = linear_forward(A_prev, W, b)
+        A, activation_cache = softmax(Z)
 
     assert (A.shape == (W.shape[0], A_prev.shape[1]))
 
@@ -216,6 +235,8 @@ def compute_cost(AL, Y):
 
     # Computes loss from aL and y.
     cost = -(1 / m) * np.sum(Y * np.log(AL) + (1 - Y) * np.log(1 - AL))  # moze i np.multiply(...)
+    # cost = - np.sum(Y * np.log(AL))
+    # cost = np.sum(Y - AL) / m
     cost = np.squeeze(cost)  # Boze pomozi... zasto ovo postoji :(
 
     assert (cost.shape == ())
@@ -275,6 +296,9 @@ def linear_activation_backward(dA, cache, activation):
         dA_prev, dW, db = linear_backward(dZ, linear_cache)
     elif activation == "tanh":
         dZ = tanh_backward(dA, activation_cache)
+        dA_prev, dW, db = linear_backward(dZ, linear_cache)
+    elif activation == "softmax":
+        dZ = softmax_backward(dA, activation_cache)
         dA_prev, dW, db = linear_backward(dZ, linear_cache)
 
     return dA_prev, dW, db
@@ -353,7 +377,7 @@ def update_parameters(parameters, grads, learning_rate, change):
     return parameters
 
 
-def L_layer_model(X, Y, layers_dims, learning_rate=0.01, num_iterations=10000, print_cost=False,
+def L_layer_model(X, Y, layers_dims, dev_x, dev_y, learning_rate=0.01, num_iterations=10000, print_cost=False,
                   dynamic_grad_change=False, point_of_change=None, second_value=None):
     """
     Implements a L-layer neural network: [LINEAR->TANH]*(L-1)->LINEAR->SIGMOID.
@@ -375,6 +399,7 @@ def L_layer_model(X, Y, layers_dims, learning_rate=0.01, num_iterations=10000, p
 
     np.random.seed(1)
     costs = []  # keep track of cost
+    validation = []
 
     # Parameters initialization. (≈ 1 line of code)
     parameters = initialize_parameters_deep(layers_dims)
@@ -411,9 +436,12 @@ def L_layer_model(X, Y, layers_dims, learning_rate=0.01, num_iterations=10000, p
             print("Cost after iteration %i: %f" % (i, cost))
         if print_cost and i % 100 == 0:
             costs.append(cost)
+        if print_cost and i % 100 == 0:
+            validation.append(compute_cost(L_model_forward(dev_x, parameters)[0], dev_y))
 
     # plot the cost
     plt.plot(np.squeeze(costs))
+    plt.plot(np.squeeze(validation))
     plt.ylabel('cost')
     plt.xlabel('iterations (per hundreds)')
     plt.title("Learning rate =" + str(learning_rate))

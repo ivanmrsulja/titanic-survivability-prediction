@@ -4,7 +4,8 @@ from utils import *
 if __name__ == '__main__':
     train_x_orig, train_y, test_x_orig, test_y, dev_x, dev_y = get_structured_data()
 
-    standardise_data(train_x_orig, test_x_orig, dev_x, print_boxplot=False, print_cor=False, train_y=None)
+    standardise_data(train_x_orig, test_x_orig, dev_x, print_boxplot=False, print_cor=False, train_y=None,
+                     remove_outliers=False)
 
     # Neural Net: Logistic regression, 4 layers [25->TanH->17->TanH->11->TanH->1->Sigmoid], sigmoid cross-entropy loss)
     train_and_evaluate_nn(train_x_orig, train_y, test_x_orig, test_y, dev_x, dev_y)
