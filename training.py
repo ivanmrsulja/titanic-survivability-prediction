@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn import tree
 from sklearn import linear_model
 from sklearn import svm
+from sklearn.ensemble import VotingClassifier
 from nn import *
 
 plt.rcParams['figure.figsize'] = (5.0, 4.0)  # set default size of plots
@@ -41,10 +42,21 @@ def train_lasso(train_x_orig, train_y):
 
 
 def train_svm(train_x_orig, train_y, dfs="ovr"):
-    clf = svm.SVC(decision_function_shape=dfs)
+    clf = svm.SVC(decision_function_shape=dfs, probability=True)
     clf.fit(train_x_orig, train_y)
 
     return clf
+
+
+def train_ensemble(train_x_orig, train_y):
+    clf1 = train_decision_tree(train_x_orig, train_y)
+    clf2 = train_svm(train_x_orig, train_y)
+    # reg = linear_model.LogisticRegressionCV()
+    # reg.fit(train_x_orig, train_y)
+
+    eclf = VotingClassifier(estimators=[('dt', clf1), ('svm', clf2)], voting='soft', weights=[1, 4])
+    eclf.fit(train_x_orig, train_y)
+    return eclf
 
 
 def evaluate_linear_model(model, test_x_orig, test_y, name, plot=False):
