@@ -41,11 +41,11 @@ def load_data():
         test_case.append(float(tokens[-5]))
         test_case.append(float(tokens[-3]))
         if tokens[-8] == "male":
-            test_case.extend(gender['male'])
-            # test_case.append(1.0)
+            # test_case.extend(gender['male'])
+            test_case.append(1.0)
         else:
-            test_case.extend(gender['female'])
-            # test_case.append(0.0)
+            # test_case.extend(gender['female'])
+            test_case.append(0.0)
         for val in categories[tokens[2].replace("\n", "")]:
             test_case.append(val)
         train_set_x_orig.append(test_case)
@@ -64,11 +64,11 @@ def load_data():
         except:
             continue
         if tokens[-8] == "male":
-            test_case.extend(gender['male'])
-            # test_case.append(1.0)
+            # test_case.extend(gender['male'])
+            test_case.append(1.0)
         else:
-            test_case.extend(gender['female'])
-            # test_case.append(0.0)
+            # test_case.extend(gender['female'])
+            test_case.append(0.0)
         for val in categories[tokens[1].replace("\n", "")]:
             test_case.append(val)
         test_set_x_orig.append(test_case)

@@ -11,17 +11,17 @@ if __name__ == '__main__':
     train_and_evaluate_nn(train_x_orig, train_y, test_x_orig, test_y, dev_x, dev_y)
 
     # Decision tree
-    model = train_decision_tree(train_x_orig, train_y)
-    evaluate_linear_model(model, test_x_orig, test_y, "DECISION TREE", plot=False)
+    # model = train_decision_tree(train_x_orig, train_y)
+    # evaluate_linear_model(model, test_x_orig, test_y, "DECISION TREE", plot=False)
 
     # Lasso regression
-    model = train_lasso(train_x_orig, train_y)
-    evaluate_linear_model(model, test_x_orig, test_y, "LASSO", plot=False)
+    # model = train_lasso(train_x_orig, train_y)
+    # evaluate_linear_model(model, test_x_orig, test_y, "LASSO", plot=False)
 
     # Support Vector Machine
-    model = train_svm(train_x_orig, train_y, dfs="ovo")
-    evaluate_linear_model(model, test_x_orig, test_y, "SUPPORT VECTOR MACHINE", plot=True)
+    # model = train_svm(train_x_orig, train_y, dfs="ovo")
+    # evaluate_linear_model(model, test_x_orig, test_y, "SUPPORT VECTOR MACHINE", plot=True)
 
     # Ensemble
-    model = train_ensemble(train_x_orig, train_y)
-    evaluate_linear_model(model, test_x_orig, test_y, "ENSEMBLE", plot=False)
+    # model = train_ensemble(train_x_orig, train_y)
+    # evaluate_linear_model(model, test_x_orig, test_y, "ENSEMBLE", plot=False)
