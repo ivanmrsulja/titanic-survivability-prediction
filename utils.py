@@ -14,7 +14,7 @@ def load_data():
     test_set_y_orig = []
 
     categories = {'1': [1, 0, 0], '2': [0, 1, 0], '3': [0, 0, 1]}
-    gender = {'male': [1,0], 'female': [0,1]}
+    gender = {'male': [1, 0], 'female': [0, 1]}
 
     with open('datasets/train.csv') as f:
         lines = f.readlines()

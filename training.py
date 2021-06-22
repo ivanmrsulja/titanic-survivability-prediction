@@ -5,6 +5,7 @@ from sklearn import linear_model
 from sklearn import svm
 from sklearn.ensemble import VotingClassifier
 from nn import *
+from naive_bayes import NaiveBayes
 
 plt.rcParams['figure.figsize'] = (5.0, 4.0)  # set default size of plots
 plt.rcParams['image.interpolation'] = 'nearest'
@@ -85,3 +86,10 @@ def evaluate_linear_model(model, test_x_orig, test_y, name, plot=False):
     elif plot and "vector" in name.lower():
         # TODO: Plot za SVM
         pass
+
+
+def train_and_evaluate_naive_bayes(train_x_orig, train_y, test_x_orig, test_y, dev_x, dev_y):
+    nb = NaiveBayes(train_x_orig, train_y, test_x_orig, test_y, dev_x, dev_y)
+    nb.numeric_col = [0, 1, 2, 3]
+    nb.group_col = [[4, 5], [6, 7, 8]]
+    nb.learn()
