@@ -8,8 +8,8 @@ plt.rcParams['image.cmap'] = 'gray'
 ###########################################
 
 # CONSTANTS DEFINING THE MODEL
-n_x = 9
-layers_dims = [9, 25, 17, 11, 1]  # 4-layer model
+n_x = 8
+layers_dims = [8, 25, 17, 11, 1]  # 4-layer model
 
 
 ###########################################
