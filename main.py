@@ -27,4 +27,4 @@ if __name__ == '__main__':
     # evaluate_linear_model(model, test_x, test_y, "ENSEMBLE", plot=False)
 
     # Naive Bayes
-    # train_and_evaluate_naive_bayes(train_x_orig, train_y_orig, test_x_orig, test_y_orig, dev_x_orig, dev_y_orig)
+    train_and_evaluate_naive_bayes(train_x_orig, train_y_orig, test_x_orig, test_y_orig, dev_x_orig, dev_y_orig)
