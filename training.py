@@ -17,8 +17,8 @@ def train_and_evaluate_nn(train_x_orig, train_y, test_x_orig, test_y, dev_x, dev
     dev_x = dev_x.reshape(dev_x.shape[0], -1).T
     test_x = test_x_orig.reshape(test_x_orig.shape[0], -1).T
 
-    parameters = L_layer_model(train_x, train_y, layers_dims, dev_x, dev_y, learning_rate=.25, num_iterations=10000,
-                               print_cost=True, dynamic_grad_change=False, point_of_change=0.31, second_value=0.05)
+    parameters = L_layer_model(train_x, train_y, layers_dims, dev_x, dev_y, learning_rate=.25, num_iterations=15000,
+                               print_cost=True, dynamic_grad_change=False, point_of_change=0.31, second_value=0.02)
     print("\n*NEURAL NET:")
     print("Training", end=" ")
     pred_train = predict(train_x, train_y, parameters)  # ne znam zasto sam stavljao ovo u promjenljive

@@ -84,7 +84,7 @@ def get_structured_data():
 
     dev_set_size = (len(train_x_orig) // 5)
 
-    rng = np.random.default_rng(5025)
+    rng = np.random.default_rng(12321)
     indexes = rng.choice(len(train_x_orig), size=dev_set_size, replace=False)
 
     dev_x = []
