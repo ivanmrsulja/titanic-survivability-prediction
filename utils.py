@@ -75,20 +75,30 @@ def load_data():
         test_set_y_orig.append(float(test_results[i].split(",")[1]))
         i += 1
 
-    return np.array(train_set_x_orig), np.array(train_set_y_orig), np.array(test_set_x_orig), np.array(
-        test_set_y_orig), [b'died', b'survived']
+    return np.array(train_set_x_orig), np.array(train_set_y_orig), [b'died', b'survived']
 
 
-def get_structured_data():
-    train_x_orig, train_y, test_x_orig, test_y, classes = load_data()
+def get_structured_data(remove_outliers=False):
+    train_x_orig, train_y, classes = load_data()
 
-    dev_set_size = (len(train_x_orig) // 5)
+    if remove_outliers:
+        df = pd.DataFrame(train_x_orig)
+        Q1 = df.quantile(0.25)
+        Q3 = df.quantile(0.75)
+        IQR = Q3 - Q1
+        df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
+        train_x_orig = df.to_numpy()
 
-    rng = np.random.default_rng(12321)
+    dev_set_size = (len(train_x_orig) // 10)
+    test_set_size = (len(train_x_orig) // 10)
+
+    rng = np.random.default_rng(5025)
     indexes = rng.choice(len(train_x_orig), size=dev_set_size, replace=False)
 
     dev_x = []
     dev_y = []
+    test_x = []
+    test_y = []
 
     for i in indexes:
         dev_x.append(train_x_orig[i])
@@ -100,25 +110,37 @@ def get_structured_data():
     dev_x = np.array(dev_x)
     dev_y = np.array(dev_y)
 
-    return train_x_orig, train_y, test_x_orig, test_y, dev_x, dev_y
+    indexes = rng.choice(len(train_x_orig), size=test_set_size, replace=False)
+
+    for i in indexes:
+        test_x.append(train_x_orig[i])
+        test_y.append(train_y[i])
+
+    np.delete(train_y, indexes)
+    np.delete(train_x_orig, indexes)
+
+    test_x = np.array(test_x)
+    test_y = np.array(test_y)
+
+    return train_x_orig, train_y, test_x, test_y, dev_x, dev_y
 
 
-def standardise_data(train_x_orig, test_x_orig, dev_x, print_cor=False, print_boxplot=False, train_y=None, remove_outliers=False, standardise=True):
+def standardise_data(train_x_orig, test_x_orig, dev_x, print_cor=False, print_boxplot=False, train_y=None, standardise=True):
 
-    if remove_outliers:
-        df = pd.DataFrame(train_x_orig)
-        Q1 = df.quantile(0.25)
-        Q3 = df.quantile(0.75)
-        IQR = Q3 - Q1
-        df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
-        train_x_orig = df.to_numpy()
+    # if remove_outliers:
+    #     df = pd.DataFrame(train_x_orig)
+    #     Q1 = df.quantile(0.25)
+    #     Q3 = df.quantile(0.75)
+    #     IQR = Q3 - Q1
+    #     df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
+    #     train_x_orig = df.to_numpy()
 
-        df = pd.DataFrame(dev_x)
-        Q1 = df.quantile(0.25)
-        Q3 = df.quantile(0.75)
-        IQR = Q3 - Q1
-        df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
-        dev_x = df.to_numpy()
+        # df = pd.DataFrame(dev_x)
+        # Q1 = df.quantile(0.25)
+        # Q3 = df.quantile(0.75)
+        # IQR = Q3 - Q1
+        # df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
+        # dev_x = df.to_numpy()
 
 
     train_arr = []
@@ -145,16 +167,17 @@ def standardise_data(train_x_orig, test_x_orig, dev_x, print_cor=False, print_bo
             mean_test = np.mean(data_test)
             sd_test = np.sqrt(np.var(data_test))
 
-            if remove_outliers:
-                sd_train += 0.001
-                sd_dev += 0.001
+            if sd_train != 0:
+                for el in train_x_orig:
+                    el[i] = (el[i] - mean_train) / sd_train
 
-            for el in train_x_orig:
-                el[i] = (el[i] - mean_train) / sd_train
-            for el in dev_x:
-                el[i] = (el[i] - mean_dev) / sd_dev
-            for el in test_x_orig:
-                el[i] = (el[i] - mean_test) / sd_test
+            if sd_dev != 0:
+                for el in dev_x:
+                    el[i] = (el[i] - mean_dev) / sd_dev
+
+            if sd_test != 0:
+                for el in test_x_orig:
+                    el[i] = (el[i] - mean_test) / sd_test
 
             if print_cor:
                 print(np.corrcoef(data_dev, train_y))

@@ -156,13 +156,12 @@ class NaiveBayes:
 
     def evaluate_prediction(self):
         # ratio_train = self.evaluate_data(self.train_x, self.train_y)
-        # ratio_dev = self.evaluate_data(self.dev_x, self.dev_y)
+        ratio_dev = self.evaluate_data(self.dev_x, self.dev_y)
         ratio_test = self.evaluate_data(self.test_x, self.test_y)
 
         print("\n*NAIVE BAYES:")
-        # print("Training: {}%".format(ratio_train*100))
-        # print("Validation: {}%".format(ratio_dev*100))
-        print("Test: {}%".format(ratio_test*100))
+        print("Test1: {}%".format(ratio_dev*100))
+        print("Test2: {} %".format(ratio_test*100))
 
     def evaluate_data(self, data, results):
         successful = 0

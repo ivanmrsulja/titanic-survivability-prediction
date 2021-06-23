@@ -440,11 +440,12 @@ def L_layer_model(X, Y, layers_dims, dev_x, dev_y, learning_rate=0.01, num_itera
             validation.append(compute_cost(L_model_forward(dev_x, parameters)[0], dev_y))
 
     # plot the cost
-    plt.plot(np.squeeze(costs))
-    plt.plot(np.squeeze(validation))
-    plt.ylabel('cost')
-    plt.xlabel('iterations (per hundreds)')
-    plt.title("Learning rate =" + str(learning_rate))
-    plt.show()
+    if print_cost:
+        plt.plot(np.squeeze(costs))
+        plt.plot(np.squeeze(validation))
+        plt.ylabel('cost')
+        plt.xlabel('iterations (per hundreds)')
+        plt.title("Learning rate =" + str(learning_rate))
+        plt.show()
 
     return parameters
