@@ -20,14 +20,6 @@ def load_data():
         lines = f.readlines()
         train_data = lines[1:]
 
-    with open('datasets/test.csv') as f:
-        lines = f.readlines()
-        test_data = lines[1:]
-
-    with open('datasets/gender_submission.csv') as f:
-        lines = f.readlines()
-        test_results = lines[1:]
-
     for line in train_data:
         if "\",," in line:
             continue
@@ -51,29 +43,6 @@ def load_data():
         train_set_x_orig.append(test_case)
         train_set_y_orig.append(float(tokens[1]))
 
-    for i, line in enumerate(test_data):
-        if "\",," in line or "e,," in line:
-            continue
-        tokens = line.split(",")
-        test_case = []
-        test_case.append(float(tokens[-7]))
-        test_case.append(float(tokens[-6]))
-        test_case.append(float(tokens[-5]))
-        try:
-            test_case.append(float(tokens[-3]))
-        except:
-            continue
-        if tokens[-8] == "male":
-            # test_case.extend(gender['male'])
-            test_case.append(1.0)
-        else:
-            # test_case.extend(gender['female'])
-            test_case.append(0.0)
-        for val in categories[tokens[1].replace("\n", "")]:
-            test_case.append(val)
-        test_set_x_orig.append(test_case)
-        test_set_y_orig.append(float(test_results[i].split(",")[1]))
-        i += 1
 
     return np.array(train_set_x_orig), np.array(train_set_y_orig), [b'died', b'survived']
 
@@ -126,22 +95,6 @@ def get_structured_data(remove_outliers=False):
 
 
 def standardise_data(train_x_orig, test_x_orig, dev_x, print_cor=False, print_boxplot=False, train_y=None, standardise=True):
-
-    # if remove_outliers:
-    #     df = pd.DataFrame(train_x_orig)
-    #     Q1 = df.quantile(0.25)
-    #     Q3 = df.quantile(0.75)
-    #     IQR = Q3 - Q1
-    #     df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
-    #     train_x_orig = df.to_numpy()
-
-        # df = pd.DataFrame(dev_x)
-        # Q1 = df.quantile(0.25)
-        # Q3 = df.quantile(0.75)
-        # IQR = Q3 - Q1
-        # df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
-        # dev_x = df.to_numpy()
-
 
     train_arr = []
     dev_arr = []

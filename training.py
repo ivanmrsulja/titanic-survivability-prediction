@@ -18,7 +18,7 @@ def train_and_evaluate_nn(train_x_orig, train_y, test_x_orig, test_y, dev_x, dev
     test_x = test_x_orig.reshape(test_x_orig.shape[0], -1).T
 
     parameters = L_layer_model(train_x, train_y, layers_dims, dev_x, dev_y, learning_rate=.25, num_iterations=20000,
-                               print_cost=True, dynamic_grad_change=True, point_of_change=0.31, second_value=0.03)
+                               print_cost=True, dynamic_grad_change=False, point_of_change=0.31, second_value=0.03)
 
     # parameters = L_layer_model(train_x, train_y, layers_dims, dev_x, dev_y, learning_rate=.25, num_iterations=20000,
     #                            print_cost=True, dynamic_grad_change=False, point_of_change=0.31, second_value=0.02)
