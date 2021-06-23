@@ -8,7 +8,6 @@ def find_interval_place(intervals, value):
             return i
 
 
-
 class NaiveBayes:
 
     def __init__(self, train_x, train_y, test_x, test_y, dev_x, dev_y):
@@ -49,8 +48,6 @@ class NaiveBayes:
         self.survival_sum = [survived, total-survived]
 
     def init_data_sum(self, intervals):
-        columns = len(self.numeric_col) + len(self.group_col)
-
         self.data_sum_win = []
         self.data_sum_lose = []
 
@@ -72,8 +69,6 @@ class NaiveBayes:
         self.max = train_x_np.max(axis=0)
         self.mean = train_x_np.mean(axis=0)
 
-        columns = len(self.train_x[0])
-
         self.intervals = self.get_numeric_intervals()
 
         self.init_data_sum(self.intervals)
@@ -93,15 +88,9 @@ class NaiveBayes:
                     if self.train_y[row_no] > 0:
                         self.data_sum_win[i][j] += int(row[col])
                     else:
-                        try:
-                            self.data_sum_lose[i][j] += int(row[col])
-                        except Exception:
-                            print("ee")
+                        self.data_sum_lose[i][j] += int(row[col])
 
-        print(self.data_sum_win)
-        print(self.data_sum_lose)
-        print(self.survival_sum)
-        self.calc_win_lose_data();
+        self.calc_win_lose_data()
 
     def calc_win_lose_data(self):
         self.data_win = []
@@ -117,18 +106,14 @@ class NaiveBayes:
             data = data/self.survival_sum[1]
             self.data_lose.append(data)
 
-        print(self.data_win)
-        print(self.data_lose)
-        # print(np.(self.data_sum_win, self.survival_sum[0]))
-
     def get_numeric_intervals(self):
         intervals = []
         for num in self.numeric_col:
 
             interval_difference = self.max[num] - self.min[num]
-            inteval_no = min(10, interval_difference)
+            interval_no = min(10, interval_difference)
 
-            step = math.floor(interval_difference / inteval_no) + 1
+            step = math.floor(interval_difference / interval_no) + 1
             interval = list(range(math.floor(self.min[num]), math.floor(self.max[num]), step))
             interval.append(9999999)
             intervals.append(interval)
@@ -174,11 +159,10 @@ class NaiveBayes:
         # ratio_dev = self.evaluate_data(self.dev_x, self.dev_y)
         ratio_test = self.evaluate_data(self.test_x, self.test_y)
 
-        print("\n*NAIVE BAYESS:")
+        print("\n*NAIVE BAYES:")
         # print("Training: {}%".format(ratio_train*100))
         # print("Validation: {}%".format(ratio_dev*100))
         print("Test: {}%".format(ratio_test*100))
-
 
     def evaluate_data(self, data, results):
         successful = 0
@@ -192,6 +176,3 @@ class NaiveBayes:
                 unsuccessful += 1
 
         return successful / (successful + unsuccessful)
-
-
-
