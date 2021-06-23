@@ -28,6 +28,8 @@ class NaiveBayes:
 
         self.learned = []
 
+        self.intervals = []
+
         self.data_sum_win = None
         self.data_sum_lose = None
 
@@ -72,13 +74,13 @@ class NaiveBayes:
 
         columns = len(self.train_x[0])
 
-        intervals = self.get_numeric_intervals()
+        self.intervals = self.get_numeric_intervals()
 
-        self.init_data_sum(intervals)
+        self.init_data_sum(self.intervals)
 
         for row_no, row in enumerate(train_x_np):
             for i, col in enumerate(self.numeric_col):
-                place = find_interval_place(intervals[i], row[col])
+                place = find_interval_place(self.intervals[i], row[col])
 
                 if self.train_y[row_no] > 0:
                     self.data_sum_win[i][place] += 1
@@ -91,7 +93,10 @@ class NaiveBayes:
                     if self.train_y[row_no] > 0:
                         self.data_sum_win[i][j] += int(row[col])
                     else:
-                        self.data_sum_lose[i][j] += int(row[col])
+                        try:
+                            self.data_sum_lose[i][j] += int(row[col])
+                        except Exception:
+                            print("ee")
 
         print(self.data_sum_win)
         print(self.data_sum_lose)
@@ -130,6 +135,63 @@ class NaiveBayes:
 
         return intervals
 
+    def predict(self, row):
+        win_predict = 1
+        lose_predict = 1
+
+        for i, col in enumerate(self.numeric_col):
+            place = find_interval_place(self.intervals[i], row[col])
+            if self.data_win[i][place] > 0:
+                win_predict *= self.data_win[i][place]
+            if self.data_lose[i][place] > 0:
+                lose_predict *= self.data_lose[i][place]
+
+        for i, gc in enumerate(self.group_col):
+            i += len(self.numeric_col)
+            for j, col in enumerate(gc):
+
+                # self.data_sum_win[i][j] += int(row[col])
+                # self.data_sum_lose[i][j] += int(row[col])
+                if row[col] > 0 and self.data_win[i][j] > 0:
+                    win_predict *= self.data_win[i][j]
+                if row[col] > 0 and self.data_lose[i][j] > 0:
+                    lose_predict *= self.data_lose[i][j]
+
+                # In case column is Boolean
+                if len(gc) == 1:
+                    if row[col] == 0 and self.data_win[i][j] > 0:
+                        win_predict *= 1/self.data_win[i][j]
+                    if row[col] == 0 and self.data_lose[i][j] > 0:
+                        lose_predict *= 1/self.data_lose[i][j]
+
+        if win_predict > lose_predict:
+            return 1
+        else:
+            return 0
+
+    def evaluate_prediction(self):
+        # ratio_train = self.evaluate_data(self.train_x, self.train_y)
+        # ratio_dev = self.evaluate_data(self.dev_x, self.dev_y)
+        ratio_test = self.evaluate_data(self.test_x, self.test_y)
+
+        print("\n*NAIVE BAYESS:")
+        # print("Training: {}%".format(ratio_train*100))
+        # print("Validation: {}%".format(ratio_dev*100))
+        print("Test: {}%".format(ratio_test*100))
+
+
+    def evaluate_data(self, data, results):
+        successful = 0
+        unsuccessful = 0
+
+        for i, row in enumerate(data):
+            prediction = self.predict(row)
+            if prediction == results[i]:
+                successful += 1
+            else:
+                unsuccessful += 1
+
+        return successful / (successful + unsuccessful)
 
 
 

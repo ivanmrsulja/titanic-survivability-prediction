@@ -90,6 +90,10 @@ def evaluate_linear_model(model, test_x_orig, test_y, name, plot=False):
 
 def train_and_evaluate_naive_bayes(train_x_orig, train_y, test_x_orig, test_y, dev_x, dev_y):
     nb = NaiveBayes(train_x_orig, train_y, test_x_orig, test_y, dev_x, dev_y)
-    nb.numeric_col = [0, 1, 2, 3]
-    nb.group_col = [[4, 5], [6, 7, 8]]
+    # nb.numeric_col = [0, 1, 2, 3]
+
+    nb.group_col = [[4], [5, 6, 7]]
+    # nb.group_col = [[4, 5], [6, 7, 8]]
     nb.learn()
+
+    nb.evaluate_prediction()
