@@ -80,7 +80,7 @@ def relu_backward(dA, Z):
 def softmax_backward(da, z):
     # z, da shapes - (m, n)
     m, n = z.shape
-    p = softmax(z)
+    p = _softmax(z)
     tensor1 = np.einsum('ij,ik->ijk', p, p)  # (m, n, n)
     tensor2 = np.einsum('ij,jk->ijk', p, np.eye(n, n))  # (m, n, n)
     dSoftmax = tensor2 - tensor1
@@ -97,7 +97,7 @@ def sigmoid_backward(dA, Z):
     return dZ
 
 
-def softmax(X):
+def _softmax(X):
     expo = np.exp(X)
     expo_sum = np.sum(np.exp(X))
     return expo / expo_sum
@@ -213,6 +213,16 @@ def L_model_forward(X, parameters):
     # LINEAR -> SIGMOID
     AL, cache = linear_activation_forward(A, parameters["W" + str(L)], parameters["b" + str(L)], 'sigmoid')
     caches.append(cache)
+
+    # new_AL = []
+    # for i in range(AL.shape[1]):
+    #     if AL[0][i] >= AL[1][i]:
+    #         new_AL.append(0.01)
+    #     else:
+    #         new_AL.append(0.999)
+    #
+    # AL = np.array(new_AL)
+    # AL.shape = [1, len(new_AL)]
 
     assert (AL.shape == (1, X.shape[1]))
 
@@ -337,7 +347,7 @@ def L_model_backward(AL, Y, caches):
 
     # Loop from l=L-2 to l=0
     for l in reversed(range(L - 1)):
-        # lth layer: (RELU -> LINEAR) gradients.
+        # lth layer: (TanH -> LINEAR) gradients.
         # Inputs: "grads["dA" + str(l + 1)], current_cache". Outputs: "grads["dA" + str(l)] , grads["dW" + str(l + 1)] , grads["db" + str(l + 1)]
 
         current_cache = caches[l]
@@ -394,7 +404,7 @@ def L_layer_model(X, Y, layers_dims, dev_x, dev_y, learning_rate=0.01, num_itera
     second_value -- second lr val that becomes active when point_of_change is passed
 
     Returns:
-    parameters -- computed weights TODO: (sacuvaj ovo na disk Pope, da ima neka opcija za to)
+    parameters -- computed weights
     """
 
     np.random.seed(1)
