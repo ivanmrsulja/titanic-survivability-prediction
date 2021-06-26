@@ -52,9 +52,28 @@ def train_decision_tree(train_x_orig, train_y):
 
 
 def train_lasso(train_x_orig, train_y):
-    reg = linear_model.Lasso(alpha=0.1)
-    reg.fit(train_x_orig, train_y)
+    coefs = []
+    n_alphas = 500
+    alphas = np.logspace(-10, 0, n_alphas)
 
+    for a in alphas:
+        reg = linear_model.Lasso(alpha=a)
+        reg.fit(train_x_orig, train_y)
+        coefs.append(reg.coef_)
+
+    ax = plt.gca()
+
+    ax.plot(alphas, coefs)
+    ax.set_xscale('log')
+    ax.set_xlim(ax.get_xlim()[::-1])  # reverse axis
+    plt.xlabel('alpha')
+    plt.ylabel('weights')
+    plt.title('Lasso coefficients')
+    plt.axis('tight')
+    plt.show()
+
+    reg = linear_model.Lasso(alpha=0.0005)
+    reg.fit(train_x_orig, train_y)
     return reg
 
 

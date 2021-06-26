@@ -8,7 +8,7 @@ if __name__ == '__main__':
     standardise_data(train_x, test_x, dev_x, print_boxplot=False, print_cor=False, train_y=None)
 
     # Neural Net: Logistic regression, 4 layers [25->TanH->17->TanH->11->TanH->1->Sigmoid], sigmoid cross-entropy loss)
-    train_and_evaluate_nn(train_x, train_y, test_x, test_y, dev_x, dev_y, save_weights=False, use_loaded_weights=False)
+    # train_and_evaluate_nn(train_x, train_y, test_x, test_y, dev_x, dev_y, save_weights=False, use_loaded_weights=False)
 
     # Decision tree
     model = train_decision_tree(train_x, train_y)

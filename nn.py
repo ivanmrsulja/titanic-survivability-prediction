@@ -53,7 +53,7 @@ def sigmoid(X):
 
 
 def softmax(X):
-    return (np.exp(X) / np.sum(np.exp(X))), X
+    return (np.exp(X) / np.sum(np.exp(X), axis=1, keepdims=True)), X
 
 
 def relu(X):
@@ -84,7 +84,7 @@ def softmax_backward(da, z):
     tensor1 = np.einsum('ij,ik->ijk', p, p)  # (m, n, n)
     tensor2 = np.einsum('ij,jk->ijk', p, np.eye(n, n))  # (m, n, n)
     dSoftmax = tensor2 - tensor1
-    dz = np.einsum('ijk,ik->ij', dSoftmax, da.T)  # (m, n)
+    dz = np.einsum('ijk,ik->ij', dSoftmax, da)  # (m, n)
     return dz
 
 
@@ -109,7 +109,7 @@ def initialize_parameters_deep(layer_dims):
     layer_dims -- python array (list) containing the dimensions of each layer in our network
 
     Returns:
-    parameters -- python dictionary containing your parameters "W1", "b1", ..., "WL", "bL":
+    parameters -- python dictionary containing parameters "W1", "b1", ..., "WL", "bL":
                     Wl -- weight matrix of shape (layer_dims[l], layer_dims[l-1])
                     bl -- bias vector of shape (layer_dims[l], 1)
     """
