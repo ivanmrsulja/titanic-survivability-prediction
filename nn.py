@@ -84,7 +84,7 @@ def softmax_backward(da, z):
     tensor1 = np.einsum('ij,ik->ijk', p, p)  # (m, n, n)
     tensor2 = np.einsum('ij,jk->ijk', p, np.eye(n, n))  # (m, n, n)
     dSoftmax = tensor2 - tensor1
-    dz = np.einsum('ijk,ik->ij', dSoftmax, da)  # (m, n)
+    dz = np.einsum('ijk,ik->ij', dSoftmax, da.T)  # (m, n)
     return dz
 
 
@@ -214,18 +214,7 @@ def L_model_forward(X, parameters):
     AL, cache = linear_activation_forward(A, parameters["W" + str(L)], parameters["b" + str(L)], 'sigmoid')
     caches.append(cache)
 
-    # new_AL = []
-    # for i in range(AL.shape[1]):
-    #     if AL[0][i] >= AL[1][i]:
-    #         new_AL.append(0.01)
-    #     else:
-    #         new_AL.append(0.999)
-    #
-    # AL = np.array(new_AL)
-    # AL.shape = [1, len(new_AL)]
-
-    assert (AL.shape == (1, X.shape[1]))
-
+    # AL.shape = [AL.shape[1], 2]
     return AL, caches
 
 

@@ -42,7 +42,10 @@ def load_data():
             test_case.append(val)
         train_set_x_orig.append(test_case)
         train_set_y_orig.append(float(tokens[1]))
-
+        # if float(tokens[1]) > 0:
+        #     train_set_y_orig.append([0, 1])
+        # else:
+        #     train_set_y_orig.append([1, 0])
 
     return np.array(train_set_x_orig), np.array(train_set_y_orig), [b'died', b'survived']
 
