@@ -55,10 +55,21 @@ def get_structured_data(remove_outliers=False):
 
     if remove_outliers:
         df = pd.DataFrame(train_x_orig)
+        result_df = pd.DataFrame(train_y)
+
+        print(len(df.index))
+        print(len(result_df.index))
+
+        result_column = df.columns.size
+        df[result_column] = result_df[0]
+
         Q1 = df.quantile(0.25)
         Q3 = df.quantile(0.75)
         IQR = Q3 - Q1
         df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
+
+        train_y = df[result_column].to_numpy()
+        df.drop(df.columns[result_column], axis=1, inplace=True)
         train_x_orig = df.to_numpy()
 
     dev_set_size = (len(train_x_orig) // 10)
