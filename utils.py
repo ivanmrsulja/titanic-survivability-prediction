@@ -57,9 +57,6 @@ def get_structured_data(remove_outliers=False):
         df = pd.DataFrame(train_x_orig)
         result_df = pd.DataFrame(train_y)
 
-        print(len(df.index))
-        print(len(result_df.index))
-
         result_column = df.columns.size
         df[result_column] = result_df[0]
 

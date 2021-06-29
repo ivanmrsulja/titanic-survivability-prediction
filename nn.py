@@ -377,7 +377,7 @@ def update_parameters(parameters, grads, learning_rate, change):
 
 
 def L_layer_model(X, Y, layers_dims, dev_x, dev_y, learning_rate=0.01, num_iterations=10000, print_cost=False,
-                  dynamic_grad_change=False, point_of_change=None, second_value=None):
+                  dynamic_grad_change=False, point_of_change=None, second_value=None, low_limit=1e-10):
     """
     Implements a L-layer neural network: [LINEAR->TANH]*(L-1)->LINEAR->SIGMOID.
 
@@ -418,7 +418,7 @@ def L_layer_model(X, Y, layers_dims, dev_x, dev_y, learning_rate=0.01, num_itera
         cost = compute_cost(AL, Y)
 
         if dynamic_grad_change:
-            if i % 3000 == 0 and i > 0:
+            if i % 3000 == 0 and i > 0 and learning_rate > low_limit:
                 learning_rate /= (i / 1000)
         elif point_of_change is not None and second_value is not None:
             if cost < point_of_change:
