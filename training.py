@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from sklearn import tree
 from sklearn import linear_model
 from sklearn import svm
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import VotingClassifier
 from nn import *
 from naive_bayes import NaiveBayes
@@ -52,35 +54,52 @@ def train_decision_tree(train_x_orig, train_y):
     return clf
 
 
-def train_lasso(train_x_orig, train_y):
-    coefs = []
-    n_alphas = 500
-    alphas = np.logspace(-10, 0, n_alphas)
+def train_lasso(train_x_orig, train_y, plot=False):
+    if plot:
+        coefs = []
+        n_alphas = 500
+        alphas = np.logspace(-10, 0, n_alphas)
 
-    for a in alphas:
-        reg = linear_model.Lasso(alpha=a)
-        reg.fit(train_x_orig, train_y)
-        coefs.append(reg.coef_)
+        for a in alphas:
+            reg = linear_model.Lasso(alpha=a)
+            reg.fit(train_x_orig, train_y)
+            coefs.append(reg.coef_)
 
-    ax = plt.gca()
+        ax = plt.gca()
 
-    ax.plot(alphas, coefs)
-    ax.set_xscale('log')
-    ax.set_xlim(ax.get_xlim()[::-1])  # reverse axis
-    plt.xlabel('alpha')
-    plt.ylabel('weights')
-    plt.title('Lasso coefficients')
-    plt.axis('tight')
-    plt.show()
+        ax.plot(alphas, coefs)
+        ax.set_xscale('log')
+        ax.set_xlim(ax.get_xlim()[::-1])  # reverse axis
+        plt.xlabel('alpha')
+        plt.ylabel('weights')
+        plt.title('Lasso coefficients')
+        plt.axis('tight')
+        plt.show()
 
     reg = linear_model.Lasso(alpha=0.0005)
     reg.fit(train_x_orig, train_y)
     return reg
 
 
-def train_svm(train_x_orig, train_y, dfs="ovr"):
-    clf = svm.SVC(decision_function_shape=dfs, probability=True)
+def train_svm(train_x_orig, train_y, dfs="ovr", plot=False):
+    clf = svm.SVC(kernel="poly", decision_function_shape=dfs, probability=True)
     clf.fit(train_x_orig, train_y)
+
+    if plot:
+        reductor = PCA(n_components=2, random_state=0)
+        result = reductor.fit_transform(train_x_orig)
+
+        for_plotting = svm.SVC(kernel="poly", decision_function_shape=dfs, probability=True)
+        for_plotting.fit(result, train_y)
+
+        support_vectors = for_plotting.support_vectors_
+
+        plt.scatter(result[:, 0], result[:, 1])
+        plt.scatter(support_vectors[:, 0], support_vectors[:, 1], color='red')
+        plt.title('SVM')
+        plt.xlabel('X1')
+        plt.ylabel('X2')
+        plt.show()
 
     return clf
 
