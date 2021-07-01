@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     # Decision tree
     model = train_decision_tree(train_x, train_y)
-    evaluate_linear_model(model, test_x, test_y, "DECISION TREE", plot=False)  # works better with non-standardised data
+    evaluate_linear_model(model, test_x, test_y, "DECISION TREE", plot=True)  # works better with non-standardised data
 
     # Lasso regression
     model = train_lasso(train_x, train_y, plot=True)

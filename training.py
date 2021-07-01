@@ -133,12 +133,9 @@ def evaluate_linear_model(model, test_x_orig, test_y, name, plot=False):
     if plot and "tree" in name.lower():
         plt.figure(figsize=(40, 20))  # minimalna rezolucija za iscrtavanje
         _ = tree.plot_tree(model,
-                           feature_names=['Age', 'Siblings/Spouses', 'Parents/Children', 'Fare', 'Gender', 'PClass 1',
+                           feature_names=['Age', 'Siblings/Spouses', 'Parents/Children', 'Fare', 'Male', 'Female', 'PClass 1',
                                           'PClass 2', 'PClass 3'])
         plt.show()
-    elif plot and "vector" in name.lower():
-        # TODO: Plot za SVM
-        pass
 
 
 def train_and_evaluate_naive_bayes(train_x_orig, train_y, test_x_orig, test_y, dev_x, dev_y):

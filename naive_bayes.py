@@ -10,13 +10,22 @@ def find_interval_place(intervals, value):
 
 class NaiveBayes:
 
-    def __init__(self, train_x, train_y, test_x, test_y, dev_x, dev_y):
+    def __init__(self, train_x, train_y, test_x, test_y):
+
+        """
+        Implementation of NaiveBayes classifier algorithm for predicting
+
+        Args:
+            train_x: Input data for training
+            train_y: Corresponding data results
+            test_x: Input data for algorithm testing
+            test_y: Corresponding correct data result
+        """
+
         self.train_x = train_x
         self.train_y = train_y
         self.test_x = test_x
         self.test_y = test_y
-        self.dev_x = dev_x
-        self.dev_y = dev_y
 
         self.group_col = []
         self.numeric_col = []
@@ -38,7 +47,12 @@ class NaiveBayes:
         self.survival_sum = [0, 0]  # [1 (survived), 0 (died)]
 
     def calc_win_lose_ratio(self):
+        """
+        Calculate result sum of wins and loses
 
+        Returns: None
+
+        """
         total = len(self.train_y)
         survived = 0
         for i in self.train_y:
@@ -48,6 +62,15 @@ class NaiveBayes:
         self.survival_sum = [survived, total-survived]
 
     def init_data_sum(self, intervals):
+        """
+        Count winning and losing data for every column in training set
+
+        Args:
+            intervals: Intervals for splitting numerical data
+
+        Returns: None
+
+        """
         self.data_sum_win = []
         self.data_sum_lose = []
 
@@ -62,6 +85,12 @@ class NaiveBayes:
             self.data_sum_lose.append([0]*interval_size)
 
     def learn(self):
+        """
+        Learn values for predictions and store in attributes
+
+        Returns: None
+
+        """
         self.calc_win_lose_ratio()
 
         train_x_np = np.array(self.train_x)
@@ -93,6 +122,13 @@ class NaiveBayes:
         self.calc_win_lose_data()
 
     def calc_win_lose_data(self):
+        """
+        Calculate win/lose ratio for every column from training set
+
+        Returns: None
+
+        """
+
         self.data_win = []
         self.data_lose = []
 
@@ -107,6 +143,12 @@ class NaiveBayes:
             self.data_lose.append(data)
 
     def get_numeric_intervals(self):
+        """
+        Split numeric columns into intervals
+
+        Returns: Classification intervals for numeric columns in dataset
+
+        """
         intervals = []
         for num in self.numeric_col:
 
@@ -121,6 +163,14 @@ class NaiveBayes:
         return intervals
 
     def predict(self, row):
+        """
+
+        Args:
+            row: Array of one data instance for prediction
+
+        Returns: 0 if probability is less than 50% otherwise 1
+
+        """
         win_predict = 1
         lose_predict = 1
 
@@ -155,8 +205,12 @@ class NaiveBayes:
             return 0
 
     def evaluate_prediction(self):
+        """
+        Evaluate algorithm using test data from attributes
+        Returns: None
+        """
+
         # ratio_train = self.evaluate_data(self.train_x, self.train_y)
-        # ratio_dev = self.evaluate_data(self.dev_x, self.dev_y)
         ratio_test = self.evaluate_data(self.test_x, self.test_y)
 
         print("\n*NAIVE BAYES:")
@@ -164,6 +218,14 @@ class NaiveBayes:
         print("Test: {} %".format(ratio_test*100))
 
     def evaluate_data(self, data, results):
+        """
+        Args:
+            data: DataSet Array
+            results: DataSet Result Array
+
+        Returns: Ratio of successful predictions
+
+        """
         successful = 0
         unsuccessful = 0
 
