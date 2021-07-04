@@ -158,7 +158,7 @@ def linear_activation_forward(A_prev, W, b, activation):
     A_prev -- activations from previous layer (or input data): (size of previous layer, number of examples)
     W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
     b -- bias vector, numpy array of shape (size of the current layer, 1)
-    activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
+    activation -- the activation to be used in this layer, stored as a text string
 
     Returns:
     A -- the output of the activation function, also called the post-activation value
@@ -188,7 +188,7 @@ def linear_activation_forward(A_prev, W, b, activation):
 
 def L_model_forward(X, parameters):
     """
-    Forward propagation for the [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID computation
+    Forward propagation for the [LINEAR->TANH]*(L-1)->LINEAR->SIGMOID computation
 
     Arguments:
     X -- data, numpy array of shape (input size, number of examples)
@@ -277,7 +277,7 @@ def linear_activation_backward(dA, cache, activation):
     Arguments:
     dA -- post-activation gradient for current layer l
     cache -- tuple of values (linear_cache, activation_cache) we store for computing backward propagation efficiently
-    activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
+    activation -- the activation to be used in this layer, stored as a text string
 
     Returns:
     dA_prev -- Gradient of the cost with respect to the activation (of the previous layer l-1), same shape as A_prev
@@ -305,14 +305,12 @@ def linear_activation_backward(dA, cache, activation):
 
 def L_model_backward(AL, Y, caches):
     """
-    Backward propagation for the [LINEAR->RELU] * (L-1) -> LINEAR -> SIGMOID group
+    Backward propagation for the [LINEAR->TANH] * (L-1) -> LINEAR -> SIGMOID group
 
     Arguments:
     AL -- probability vector, output of the forward propagation (L_model_forward())
     Y -- true "label" vector (containing 0 if non-cat, 1 if cat)
-    caches -- list of caches containing:
-                every cache of linear_activation_forward() with "relu" (it's caches[l], for l in range(L-1) i.e l = 0...L-2)
-                the cache of linear_activation_forward() with "sigmoid" (it's caches[L-1])
+    caches -- list of caches
 
     Returns:
     grads -- A dictionary with the gradients
@@ -336,7 +334,7 @@ def L_model_backward(AL, Y, caches):
 
     # Loop from l=L-2 to l=0
     for l in reversed(range(L - 1)):
-        # lth layer: (TanH -> LINEAR) gradients.
+        # l-th layer: (TanH -> LINEAR) gradients.
         # Inputs: "grads["dA" + str(l + 1)], current_cache". Outputs: "grads["dA" + str(l)] , grads["dW" + str(l + 1)] , grads["db" + str(l + 1)]
 
         current_cache = caches[l]
@@ -411,7 +409,7 @@ def L_layer_model(X, Y, layers_dims, dev_x, dev_y, learning_rate=0.01, num_itera
 
     for i in range(0, num_iterations):
 
-        # Forward propagation: [LINEAR -> RELU]*(L-1) -> LINEAR -> SIGMOID.
+        # Forward propagation: [LINEAR -> TANH]*(L-1) -> LINEAR -> SIGMOID.
         AL, caches = L_model_forward(X, parameters)
 
         # Compute cost.
